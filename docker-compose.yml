@@ -1,0 +1,16 @@
+services:
+  ado-connector:
+    build: .
+    command: fastmcp run mcp_server.py --transport streamable-http --host 0.0.0.0 --port ${PORT:-8000}
+    ports:
+      - "8000:${PORT:-8000}"
+    env_file: .env
+    restart: unless-stopped
+
+  teams-connector:
+    build: .
+    command: fastmcp run teams_mcp_server.py --transport streamable-http --host 0.0.0.0 --port ${PORT:-8001}
+    ports:
+      - "8001:${PORT:-8001}"
+    env_file: .env
+    restart: unless-stopped

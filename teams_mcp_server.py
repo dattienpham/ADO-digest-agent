@@ -1,8 +1,8 @@
 """
 Teams MCP Server — sends digest cards to Microsoft Teams.
 
-Run (HTTP/SSE, for AIQ platform):
-    fastmcp run teams_mcp_server.py --transport sse --host 0.0.0.0 --port 8001
+Run (streamable HTTP, for AIQ platform):
+    fastmcp run teams_mcp_server.py --transport streamable-http --host 0.0.0.0 --port 8001
 """
 from dotenv import load_dotenv
 load_dotenv()

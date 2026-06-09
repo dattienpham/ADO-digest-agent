@@ -1,0 +1,38 @@
+name: ADO Digest Agent
+
+on:
+  schedule:
+    - cron: "0 2 * * 1-5"   # 9:00 AM UTC+7 = 02:00 UTC
+    - cron: "0 6 * * 1-5"   # 1:00 PM UTC+7 = 06:00 UTC
+  workflow_dispatch:          # Manual trigger for testing
+
+jobs:
+  run-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run digest (one-shot)
+        env:
+          ADO_PAT: ${{ secrets.ADO_PAT }}
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ADO_ORG: agentiqai
+          ADO_PROJECT: AgentIQ
+        run: |
+          python - <<'EOF'
+          from dotenv import load_dotenv
+          load_dotenv()
+          from datetime import datetime
+          import pytz
+          from agent.scheduler import run_digest
+          run_digest(datetime.now(pytz.utc))
+          EOF
