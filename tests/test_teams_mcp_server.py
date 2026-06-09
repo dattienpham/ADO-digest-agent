@@ -41,5 +41,5 @@ def test_send_digest_forwards_arguments_to_builder():
 
 def test_send_digest_raises_on_invalid_section():
     sections = [{"kind": "tickets", "items": []}]
-    with pytest.raises(ValueError, match="type.*data"):
+    with pytest.raises(ValueError, match="'type' and 'data' keys"):
         send_digest("Title", sections)

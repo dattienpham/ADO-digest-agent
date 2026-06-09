@@ -218,7 +218,7 @@ def _render_tickets(items: list[dict]) -> list[dict]:
         assignee = item.get("assignedTo") or "Chưa assign"
         blocks.append({
             "type": "TextBlock",
-            "text": f"• #{item['id']} {item['title']} · P{p} · {state} · {assignee}",
+            "text": f"• #{item.get('id', '?')} {item.get('title', '—')} · P{p} · {state} · {assignee}",
             "wrap": True,
             "size": "Small",
         })
@@ -232,14 +232,14 @@ def _render_comments(items: list[dict]) -> list[dict]:
     for item in items:
         blocks.append({
             "type": "TextBlock",
-            "text": f"#{item['storyId']} {item['storyTitle']}",
+            "text": f"#{item.get('storyId', '?')} {item.get('storyTitle', '—')}",
             "weight": "Bolder",
             "size": "Small",
             "spacing": "Small",
         })
         blocks.append({
             "type": "TextBlock",
-            "text": f"{item['author']}: {item['text']}",
+            "text": f"{item.get('author', '?')}: {item.get('text', '')}",
             "wrap": True,
             "isSubtle": True,
             "size": "Small",
