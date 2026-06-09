@@ -56,8 +56,7 @@ def test_comments_section_rendered():
     ]}]
     card = build_card_from_sections("Title", sections)
     texts = " ".join(b.get("text", "") for b in card["body"])
-    assert "Nam" in texts
-    assert "LGTM" in texts
+    assert "Nam: LGTM" in texts
     assert "2026-06-09 08:00:00" in texts
     assert "[#5]" in texts
 

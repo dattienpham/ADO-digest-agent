@@ -269,7 +269,7 @@ def _render_comments(items: list[dict]) -> list[dict]:
             })
         blocks.append({
             "type": "TextBlock",
-            "text": text,
+            "text": f"{author}: {text}",
             "wrap": True,
             "isSubtle": True,
             "size": "Small",
