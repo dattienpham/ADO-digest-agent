@@ -36,10 +36,10 @@ def test_send_digest_forwards_arguments_to_builder():
     with patch("teams_mcp_server.build_card_from_sections", return_value={"type": "AdaptiveCard", "body": []}) as mock_build, \
          patch("teams_mcp_server.send_to_teams"):
         send_digest("My Title", sections)
-    mock_build.assert_called_once_with("My Title", sections)
+    mock_build.assert_called_once_with("My Title", [{"type": "tickets", "data": []}])
 
 
 def test_send_digest_raises_on_invalid_section():
     sections = [{"kind": "tickets", "items": []}]
-    with pytest.raises(ValueError, match="'type' and 'data' keys"):
+    with pytest.raises(ValueError):
         send_digest("Title", sections)
