@@ -28,9 +28,11 @@ mcp = FastMCP(
 class TicketItem(BaseModel):
     id: int
     title: str
+    assignedTo: str = "Chưa assign"
+    createdDate: str = ""
+    url: str = ""
     state: str = "—"
     priority: int | None = None
-    assignedTo: str = "Chưa assign"
 
 
 class CommentItem(BaseModel):
@@ -39,12 +41,14 @@ class CommentItem(BaseModel):
     author: str
     text: str
     date: str = ""
+    storyUrl: str = ""
 
 
 class HighlightItem(BaseModel):
     id: int
     title: str
     reason: str
+    url: str = ""
 
 
 class SummaryData(BaseModel):
@@ -88,18 +92,19 @@ def send_digest(title: str, sections: list[Section]) -> str:
         sections: Ordered list of sections. Supported types:
 
           Tickets (list of work items):
-            {"type": "tickets", "data": [{"id": 1, "title": "Fix bug", "state": "Active", "priority": 1, "assignedTo": "Nam"}]}
+            {"type": "tickets", "data": [{"id": 1, "title": "Fix bug", "assignedTo": "Nam", "createdDate": "2026-06-09 09:00:00", "url": "https://dev.azure.com/org/project/_workitems/edit/1", "state": "Active", "priority": 1}]}
 
           Comments (grouped by story):
-            {"type": "comments", "data": [{"storyId": 1, "storyTitle": "Fix bug", "author": "Nam", "text": "LGTM", "date": "2026-06-09T08:00:00Z"}]}
+            {"type": "comments", "data": [{"storyId": 1, "storyTitle": "Fix bug", "author": "Nam", "text": "LGTM", "date": "2026-06-09 09:00:00", "storyUrl": "https://dev.azure.com/org/project/_workitems/edit/1"}]}
 
           Highlights (items needing attention):
-            {"type": "highlights", "data": [{"id": 1, "title": "API down", "reason": "Priority 1 chưa assign"}]}
+            {"type": "highlights", "data": [{"id": 1, "title": "API down", "reason": "Priority 1 chưa assign", "url": "https://dev.azure.com/org/project/_workitems/edit/1"}]}
 
           Summary (AI-generated text):
             {"type": "summary", "data": {"text": "• 3 tickets mới\n• 1 cần chú ý"}}
 
           Sections with empty data are skipped automatically.
+          Dates should be formatted as "YYYY-MM-DD HH:MM:SS" in UTC+7.
 
     Returns "OK" on success; raises ValueError for invalid sections,
     propagates errors from the Teams sender on delivery failure.

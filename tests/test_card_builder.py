@@ -21,22 +21,45 @@ def test_empty_sections_shows_no_update():
 
 def test_tickets_section_rendered():
     sections = [{"type": "tickets", "data": [
-        {"id": 1, "title": "Fix bug", "state": "Active", "priority": 1, "assignedTo": "Dat"}
+        {"id": 1, "title": "Fix bug", "assignedTo": "Dat", "createdDate": "2026-06-09 09:00:00",
+         "url": "https://dev.azure.com/org/proj/_workitems/edit/1"}
     ]}]
     card = build_card_from_sections("Title", sections)
     texts = " ".join(b.get("text", "") for b in card["body"])
     assert "Fix bug" in texts
     assert "#1" in texts
+    assert "Dat" in texts
+    assert "2026-06-09 09:00:00" in texts
+
+
+def test_tickets_url_rendered_as_link():
+    sections = [{"type": "tickets", "data": [
+        {"id": 7, "title": "T", "url": "https://example.com/7"}
+    ]}]
+    card = build_card_from_sections("Title", sections)
+    texts = " ".join(b.get("text", "") for b in card["body"])
+    assert "[#7](https://example.com/7)" in texts
+
+
+def test_tickets_no_url_fallback():
+    sections = [{"type": "tickets", "data": [{"id": 3, "title": "T"}]}]
+    card = build_card_from_sections("Title", sections)
+    texts = " ".join(b.get("text", "") for b in card["body"])
+    assert "#3" in texts
+    assert "http" not in texts
 
 
 def test_comments_section_rendered():
     sections = [{"type": "comments", "data": [
-        {"storyId": 5, "storyTitle": "Auth story", "author": "Nam", "text": "LGTM", "date": "2026-06-09T08:00:00Z"}
+        {"storyId": 5, "storyTitle": "Auth story", "author": "Nam", "text": "LGTM",
+         "date": "2026-06-09 08:00:00", "storyUrl": "https://dev.azure.com/org/proj/_workitems/edit/5"}
     ]}]
     card = build_card_from_sections("Title", sections)
     texts = " ".join(b.get("text", "") for b in card["body"])
     assert "Nam" in texts
     assert "LGTM" in texts
+    assert "2026-06-09 08:00:00" in texts
+    assert "[#5]" in texts
 
 
 def test_summary_section_rendered():

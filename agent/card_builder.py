@@ -191,17 +191,22 @@ def _render_section(stype: str, data) -> list[dict]:
     return fn(data)
 
 
+def _id_link(iid, url: str) -> str:
+    return f"[#{iid}]({url})" if url else f"#{iid}"
+
+
 def _render_highlights(items: list[dict]) -> list[dict]:
     blocks: list[dict] = [
         {"type": "TextBlock", "text": "⚠️ Cần chú ý", "weight": "Bolder", "color": "Warning"},
     ]
     for item in items:
         iid = item.get("id", "?")
+        url = item.get("url", "")
         title = item.get("title", "—")
         reason = item.get("reason", "—")
         blocks.append({
             "type": "TextBlock",
-            "text": f"• #{iid} {title} — {reason}",
+            "text": f"• {_id_link(iid, url)} {title} — {reason}",
             "wrap": True,
             "color": "Warning",
         })
@@ -210,18 +215,29 @@ def _render_highlights(items: list[dict]) -> list[dict]:
 
 def _render_tickets(items: list[dict]) -> list[dict]:
     blocks: list[dict] = [
-        {"type": "TextBlock", "text": "🎫 Tickets", "weight": "Bolder"},
+        {"type": "TextBlock", "text": "🎫 Tickets mới", "weight": "Bolder"},
     ]
     for item in items:
-        p = item.get("priority") or "—"
-        state = item.get("state") or "—"
+        iid = item.get("id", "?")
+        url = item.get("url", "")
+        title = item.get("title", "—")
         assignee = item.get("assignedTo") or "Chưa assign"
+        created = item.get("createdDate", "")
         blocks.append({
             "type": "TextBlock",
-            "text": f"• #{item.get('id', '?')} {item.get('title', '—')} · P{p} · {state} · {assignee}",
+            "text": f"{_id_link(iid, url)} — {title} (**{assignee}**)",
             "wrap": True,
             "size": "Small",
+            "spacing": "Small",
         })
+        if created:
+            blocks.append({
+                "type": "TextBlock",
+                "text": created,
+                "isSubtle": True,
+                "size": "Small",
+                "spacing": "None",
+            })
     return blocks
 
 
@@ -230,19 +246,34 @@ def _render_comments(items: list[dict]) -> list[dict]:
         {"type": "TextBlock", "text": "💬 Comments mới", "weight": "Bolder"},
     ]
     for item in items:
+        story_id = item.get("storyId", "?")
+        story_url = item.get("storyUrl", "")
+        story_title = item.get("storyTitle", "—")
+        author = item.get("author", "?")
+        date = item.get("date", "")
+        text = item.get("text", "")
         blocks.append({
             "type": "TextBlock",
-            "text": f"#{item.get('storyId', '?')} {item.get('storyTitle', '—')}",
-            "weight": "Bolder",
+            "text": f"{_id_link(story_id, story_url)} — {story_title} · **{author}**",
+            "wrap": True,
             "size": "Small",
             "spacing": "Small",
         })
+        if date:
+            blocks.append({
+                "type": "TextBlock",
+                "text": date,
+                "isSubtle": True,
+                "size": "Small",
+                "spacing": "None",
+            })
         blocks.append({
             "type": "TextBlock",
-            "text": f"{item.get('author', '?')}: {item.get('text', '')}",
+            "text": text,
             "wrap": True,
             "isSubtle": True,
             "size": "Small",
+            "spacing": "None",
         })
     return blocks
 
