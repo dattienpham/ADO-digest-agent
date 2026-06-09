@@ -250,5 +250,5 @@ def _render_comments(items: list[dict]) -> list[dict]:
 def _render_summary(data: dict) -> list[dict]:
     return [
         {"type": "TextBlock", "text": "🤖 AI Summary", "weight": "Bolder", "color": "Accent"},
-        {"type": "TextBlock", "text": data["text"], "wrap": True, "size": "Small"},
+        {"type": "TextBlock", "text": data.get("text", ""), "wrap": True, "size": "Small"},
     ]
