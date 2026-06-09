@@ -30,7 +30,8 @@ def send_digest(title: str, sections: list[dict]) -> str:
                   {"type": "tickets"|"comments"|"summary"|"highlights", "data": [...]}
                   Sections with empty data are skipped automatically.
 
-    Returns "OK" on success, raises RuntimeError on failure.
+    Returns "OK" on success; raises ValueError for invalid sections,
+    propagates errors from the Teams sender on delivery failure.
     """
     for s in sections:
         if "type" not in s or "data" not in s:
