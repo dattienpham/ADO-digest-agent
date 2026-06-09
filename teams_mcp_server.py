@@ -32,6 +32,11 @@ def send_digest(title: str, sections: list[dict]) -> str:
 
     Returns "OK" on success, raises RuntimeError on failure.
     """
+    for s in sections:
+        if "type" not in s or "data" not in s:
+            raise ValueError(
+                f"Each section must have 'type' and 'data' keys, got: {list(s.keys())}"
+            )
     card = build_card_from_sections(title, sections)
     send_to_teams(card)
     return "OK"
