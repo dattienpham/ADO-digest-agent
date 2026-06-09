@@ -75,6 +75,15 @@ def test_section_order_preserved():
     ]
     card = build_card_from_sections("Title", sections)
     texts = [b.get("text", "") for b in card["body"]]
-    summary_idx = next(i for i, t in enumerate(texts) if "Summary first" in t)
-    ticket_idx = next(i for i, t in enumerate(texts) if "#1" in t)
+    summary_idx = next((i for i, t in enumerate(texts) if "Summary first" in t), None)
+    ticket_idx = next((i for i, t in enumerate(texts) if "#1" in t), None)
+    assert summary_idx is not None, "Summary block not found"
+    assert ticket_idx is not None, "Ticket block not found"
     assert summary_idx < ticket_idx
+
+
+def test_unknown_section_type_skipped():
+    sections = [{"type": "bogus_type", "data": [1, 2, 3]}]
+    card = build_card_from_sections("Title", sections)
+    texts = [b.get("text", "") for b in card["body"]]
+    assert any("Không có cập nhật" in t for t in texts)

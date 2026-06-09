@@ -1,6 +1,9 @@
+import logging
 from datetime import datetime
 from html.parser import HTMLParser
 import pytz
+
+_log = logging.getLogger(__name__)
 
 
 class _StripHTML(HTMLParser):
@@ -182,7 +185,10 @@ def _render_section(stype: str, data) -> list[dict]:
         "summary": _render_summary,
     }
     fn = renderers.get(stype)
-    return fn(data) if fn else []
+    if fn is None:
+        _log.warning("Unknown section type %r — skipping", stype)
+        return []
+    return fn(data)
 
 
 def _render_highlights(items: list[dict]) -> list[dict]:
@@ -190,9 +196,12 @@ def _render_highlights(items: list[dict]) -> list[dict]:
         {"type": "TextBlock", "text": "⚠️ Cần chú ý", "weight": "Bolder", "color": "Warning"},
     ]
     for item in items:
+        iid = item.get("id", "?")
+        title = item.get("title", "—")
+        reason = item.get("reason", "—")
         blocks.append({
             "type": "TextBlock",
-            "text": f"• #{item['id']} {item['title']} — {item['reason']}",
+            "text": f"• #{iid} {title} — {reason}",
             "wrap": True,
             "color": "Warning",
         })
