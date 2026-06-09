@@ -16,6 +16,9 @@ from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
 
+from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 from fastmcp import FastMCP
 from agent.ado_client import (
     get_new_stories,
@@ -54,6 +57,19 @@ mcp = FastMCP(
         "All time parameters use UTC in format 'YYYY-MM-DD HH:MM:SS'."
     ),
 )
+
+
+class _BearerAuth(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        key = os.environ.get("MCP_API_KEY", "")
+        if key:
+            token = request.headers.get("Authorization", "").removeprefix("Bearer ").strip()
+            if token != key:
+                return Response("Unauthorized", status_code=401)
+        return await call_next(request)
+
+
+mcp.add_middleware(Middleware(_BearerAuth))
 
 
 @mcp.tool()
