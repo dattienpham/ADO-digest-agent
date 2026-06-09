@@ -1,6 +1,6 @@
 import os
 
-ADO_PAT = os.environ["ADO_PAT"]
+ADO_PAT = os.environ.get("ADO_PAT", "")
 ADO_ORG = os.environ.get("ADO_ORG", "agentiqai")
 ADO_PROJECT = os.environ.get("ADO_PROJECT", "AgentIQ")
 ADO_BASE_URL = f"https://dev.azure.com/{ADO_ORG}/{ADO_PROJECT}"
