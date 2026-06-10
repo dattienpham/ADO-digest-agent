@@ -12,7 +12,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from pydantic import BaseModel, Field, TypeAdapter, ValidationError
-from starlette.middleware import Middleware
 from fastmcp import FastMCP
 from agent.auth import BearerAuth
 from agent.card_builder import build_card_from_sections
@@ -27,7 +26,7 @@ mcp = FastMCP(
 )
 
 
-mcp.add_middleware(Middleware(BearerAuth))
+mcp.add_middleware(BearerAuth)
 
 
 class TicketItem(BaseModel):

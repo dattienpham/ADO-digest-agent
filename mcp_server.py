@@ -16,7 +16,6 @@ from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
 
-from starlette.middleware import Middleware
 from fastmcp import FastMCP
 from agent.auth import BearerAuth
 from agent.ado_client import (
@@ -58,7 +57,7 @@ mcp = FastMCP(
 )
 
 
-mcp.add_middleware(Middleware(BearerAuth))
+mcp.add_middleware(BearerAuth)
 
 
 @mcp.tool()
