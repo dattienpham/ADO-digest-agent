@@ -5,6 +5,9 @@ from config import TEAMS_FLOW_URL
 
 
 def send_to_teams(card: dict, retries: int = 3):
+    if not TEAMS_FLOW_URL:
+        raise ValueError("TEAMS_FLOW_URL is not configured")
+    # Power Automate expects the card as a serialized JSON string, not an object.
     payload = {"card": json.dumps(card)}
     for attempt in range(1, retries + 1):
         try:
@@ -33,5 +36,5 @@ def send_error_card(error_msg: str):
     }
     try:
         send_to_teams(card, retries=1)
-    except Exception:
-        pass
+    except Exception as exc:
+        print(f"[teams_sender] send_error_card failed: {exc}")

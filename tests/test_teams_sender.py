@@ -1,7 +1,7 @@
 import json
 import pytest
 from unittest.mock import patch, MagicMock
-from agent.teams_sender import send_to_teams
+from agent.teams_sender import send_to_teams, send_error_card
 
 
 SAMPLE_CARD = {
@@ -53,6 +53,7 @@ def test_raises_after_all_retries_fail(mock_post, mock_sleep):
     mock_post.return_value = _mock_response(500)
     with pytest.raises(RuntimeError, match="Failed to send card after 3 attempts"):
         send_to_teams(SAMPLE_CARD)
+    assert mock_sleep.call_count == 2  # sleeps after attempt 1 and 2, not after 3
 
 
 @patch("agent.teams_sender.TEAMS_FLOW_URL", FLOW_URL)
@@ -62,3 +63,27 @@ def test_posts_to_flow_url(mock_post):
     send_to_teams(SAMPLE_CARD)
     url_called = mock_post.call_args[0][0]
     assert url_called == FLOW_URL
+
+
+@patch("agent.teams_sender.time.sleep")
+@patch("agent.teams_sender.TEAMS_FLOW_URL", FLOW_URL)
+@patch("agent.teams_sender.requests.post")
+def test_send_error_card_does_not_raise(mock_post, mock_sleep):
+    mock_post.return_value = _mock_response(500)
+    send_error_card("something went wrong")  # must not raise even on failure
+
+
+@patch("agent.teams_sender.TEAMS_FLOW_URL", FLOW_URL)
+@patch("agent.teams_sender.requests.post")
+def test_send_error_card_success(mock_post):
+    mock_post.return_value = _mock_response(202)
+    send_error_card("test error")
+    _, kwargs = mock_post.call_args
+    body = kwargs["json"]
+    assert "card" in body
+
+
+@patch("agent.teams_sender.TEAMS_FLOW_URL", "")
+def test_raises_when_flow_url_not_configured():
+    with pytest.raises(ValueError, match="TEAMS_FLOW_URL is not configured"):
+        send_to_teams(SAMPLE_CARD)
