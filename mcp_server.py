@@ -4,8 +4,8 @@ ADO MCP Server — exposes Azure DevOps as tools for AI agents.
 Run (stdio, for Claude Desktop / mcp dev):
     python mcp_server.py
 
-Run (HTTP/SSE, for AIQ platform via ngrok):
-    fastmcp run mcp_server.py --transport sse --port 8000
+Run (streamable HTTP, for AIQ platform):
+    fastmcp run mcp_server.py --transport streamable-http --host 0.0.0.0 --port 8000
 """
 
 import os
@@ -17,9 +17,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from starlette.middleware import Middleware
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import Response
 from fastmcp import FastMCP
+from agent.auth import BearerAuth
 from agent.ado_client import (
     get_new_stories,
     get_active_stories_changed_since,
@@ -59,17 +58,7 @@ mcp = FastMCP(
 )
 
 
-class _BearerAuth(BaseHTTPMiddleware):
-    async def dispatch(self, request, call_next):
-        key = os.environ.get("MCP_API_KEY", "")
-        if key:
-            token = request.headers.get("Authorization", "").removeprefix("Bearer ").strip()
-            if token != key:
-                return Response("Unauthorized", status_code=401)
-        return await call_next(request)
-
-
-mcp.add_middleware(Middleware(_BearerAuth))
+mcp.add_middleware(Middleware(BearerAuth))
 
 
 @mcp.tool()

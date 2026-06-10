@@ -13,9 +13,8 @@ load_dotenv()
 
 from pydantic import BaseModel, Field, TypeAdapter, ValidationError
 from starlette.middleware import Middleware
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import Response
 from fastmcp import FastMCP
+from agent.auth import BearerAuth
 from agent.card_builder import build_card_from_sections
 from agent.teams_sender import send_to_teams
 
@@ -28,17 +27,7 @@ mcp = FastMCP(
 )
 
 
-class _BearerAuth(BaseHTTPMiddleware):
-    async def dispatch(self, request, call_next):
-        key = os.environ.get("MCP_API_KEY", "")
-        if key:
-            token = request.headers.get("Authorization", "").removeprefix("Bearer ").strip()
-            if token != key:
-                return Response("Unauthorized", status_code=401)
-        return await call_next(request)
-
-
-mcp.add_middleware(Middleware(_BearerAuth))
+mcp.add_middleware(Middleware(BearerAuth))
 
 
 class TicketItem(BaseModel):

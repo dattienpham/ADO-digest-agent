@@ -78,6 +78,15 @@ def test_highlights_section_rendered():
     assert "Priority 1" in texts
 
 
+def test_highlights_url_rendered_as_link():
+    sections = [{"type": "highlights", "data": [
+        {"id": 9, "title": "API down", "reason": "unassigned", "url": "https://example.com/9"}
+    ]}]
+    card = build_card_from_sections("Title", sections)
+    texts = " ".join(b.get("text", "") for b in card["body"])
+    assert "[#9](https://example.com/9)" in texts
+
+
 def test_empty_data_section_skipped():
     sections = [
         {"type": "tickets", "data": []},

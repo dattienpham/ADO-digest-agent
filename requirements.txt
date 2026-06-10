@@ -4,4 +4,5 @@ pytz>=2024.1
 holidays>=0.46
 anthropic>=0.30.0
 python-dotenv>=1.0.0
-fastmcp>=2.0.0
+fastmcp>=3.4.0,<4
+pydantic>=2.0
