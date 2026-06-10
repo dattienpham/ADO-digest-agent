@@ -57,9 +57,6 @@ mcp = FastMCP(
 )
 
 
-mcp.add_middleware(BearerAuth)
-
-
 @mcp.tool()
 def get_new_work_items(start_time: str, end_time: str) -> list[dict]:
     """Get new User Stories created in ADO within a time window.
@@ -139,4 +136,7 @@ def get_work_items_by_ids(ids: list[int]) -> list[dict]:
 
 
 if __name__ == "__main__":
-    mcp.run()
+    import uvicorn
+    app = mcp.http_app()
+    app.add_middleware(BearerAuth)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))

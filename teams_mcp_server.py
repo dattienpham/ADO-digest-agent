@@ -26,9 +26,6 @@ mcp = FastMCP(
 )
 
 
-mcp.add_middleware(BearerAuth)
-
-
 class TicketItem(BaseModel):
     id: int
     title: str
@@ -124,4 +121,8 @@ def send_digest(title: str, sections: list[Section]) -> str:
 
 
 if __name__ == "__main__":
-    mcp.run()
+    import os
+    import uvicorn
+    app = mcp.http_app()
+    app.add_middleware(BearerAuth)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8001)))
