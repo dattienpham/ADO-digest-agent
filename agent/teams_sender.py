@@ -1,20 +1,15 @@
+import json
 import time
 import requests
-from config import TEAMS_WEBHOOK_URL
+from config import TEAMS_FLOW_URL
 
 
 def send_to_teams(card: dict, retries: int = 3):
-    payload = {
-        "type": "message",
-        "attachments": [{
-            "contentType": "application/vnd.microsoft.card.adaptive",
-            "content": card,
-        }],
-    }
+    payload = {"card": json.dumps(card)}
     for attempt in range(1, retries + 1):
         try:
-            resp = requests.post(TEAMS_WEBHOOK_URL, json=payload, timeout=15)
-            if resp.status_code == 200:
+            resp = requests.post(TEAMS_FLOW_URL, json=payload, timeout=15)
+            if resp.status_code in (200, 202):
                 print(f"[teams_sender] Card sent (attempt {attempt})")
                 return
             print(f"[teams_sender] Attempt {attempt} failed: HTTP {resp.status_code} — {resp.text[:200]}")

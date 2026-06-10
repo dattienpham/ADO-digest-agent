@@ -5,7 +5,7 @@ ADO_ORG = os.environ.get("ADO_ORG", "agentiqai")
 ADO_PROJECT = os.environ.get("ADO_PROJECT", "AgentIQ")
 ADO_BASE_URL = f"https://dev.azure.com/{ADO_ORG}/{ADO_PROJECT}"
 
-TEAMS_WEBHOOK_URL = os.environ.get("TEAMS_WEBHOOK_URL", "")
+TEAMS_FLOW_URL = os.environ.get("TEAMS_FLOW_URL", "")
 
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 
