@@ -1,7 +1,7 @@
 import base64
 from datetime import datetime, timezone
 import requests
-from config import ADO_PAT, ADO_BASE_URL
+from config import ADO_PAT, ADO_BASE_URL, ADO_PROJECT
 
 _token = base64.b64encode(f":{ADO_PAT}".encode()).decode()
 HEADERS = {
@@ -51,7 +51,7 @@ def get_new_stories(start_iso: str, end_iso: str) -> list[dict]:
     query = f"""
     SELECT [System.Id]
     FROM WorkItems
-    WHERE [System.TeamProject] = 'AgentIQ'
+    WHERE [System.TeamProject] = '{ADO_PROJECT}'
       AND [System.WorkItemType] = 'User Story'
       AND [System.CreatedDate] >= '{start_iso}'
       AND [System.CreatedDate] < '{end_iso}'
@@ -65,7 +65,7 @@ def get_active_stories_changed_since(since_iso: str) -> list[dict]:
     query = f"""
     SELECT [System.Id]
     FROM WorkItems
-    WHERE [System.TeamProject] = 'AgentIQ'
+    WHERE [System.TeamProject] = '{ADO_PROJECT}'
       AND [System.WorkItemType] = 'User Story'
       AND [System.State] NOT IN ('Closed', 'Removed')
       AND [System.ChangedDate] >= '{since_iso}'
