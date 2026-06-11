@@ -15,8 +15,10 @@ def get_lookback_window(run_time: datetime) -> tuple[datetime, datetime]:
 
     if hour == 9:
         end = local.replace(hour=9, minute=0, second=0, microsecond=0)
-        yesterday = local - timedelta(days=1)
-        start = yesterday.replace(hour=13, minute=0, second=0, microsecond=0)
+        # Monday 9AM: look back to Friday 1PM (skip weekend)
+        days_back = 3 if local.weekday() == 0 else 1
+        prev_day = local - timedelta(days=days_back)
+        start = prev_day.replace(hour=13, minute=0, second=0, microsecond=0)
     elif hour == 13:
         end = local.replace(hour=13, minute=0, second=0, microsecond=0)
         start = local.replace(hour=9, minute=0, second=0, microsecond=0)
